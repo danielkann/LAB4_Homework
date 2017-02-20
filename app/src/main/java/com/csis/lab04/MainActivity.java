@@ -38,22 +38,117 @@ public class MainActivity extends AppCompatActivity {
     TextView myCounter;
     TextView myFrequency;
 
+    private SeekBar slider1;
+    float slider1Value = 0.0f;
+
+    private SeekBar slider2;
+    float slider2Value = 0.0f;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);//Mandatory
         setContentView(R.layout.activity_main);//Mandatory
 
 
+
         myCounter = (TextView) findViewById(R.id.counter);
         myFrequency = (TextView) findViewById(R.id.frequency);
-        Switch onOffSwitch = (Switch) findViewById(R.id.onOffSwitch);//declared the switch here pointing to id onOffSwitch
 
-        //Check to see if switch1 value changes
+        Button playButton = (Button) findViewById(R.id.playButton); //findViewById uses the ids you specified in the xml!
+        Button stopButton = (Button) findViewById(R.id.stopButton);
+
+        Switch onOffSwitch = (Switch) findViewById(R.id.onOffSwitch);//declared the switch here pointing to id onOffSwitch
+        Switch reverseSwitch = (Switch) findViewById(R.id.reverseSwitch);
+        Switch songOnOff = (Switch) findViewById(R.id.songOnOff);
+
+        slider1 = (SeekBar) findViewById(R.id.slider1);
+        slider2 = (SeekBar) findViewById(R.id.slider2);
+
+
+        //Check to see if onOffSwitch value changes
         onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 float val = (isChecked) ?  1.0f : 0.0f; // value = (get value of isChecked, if true val = 1.0f, if false val = 0.0f)
                 sendFloatPD("onOff", val); //send value to patch, receiveEvent names onOff
+
+            }
+        });
+
+        //Check to see if songOnOff value changes
+        songOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                float val = (isChecked) ?  1.0f : 0.0f; // value = (get value of isChecked, if true val = 1.0f, if false val = 0.0f)
+                sendFloatPD("songOnOff", val); //send value to patch, receiveEvent names onOff
+
+            }
+        });
+
+        //Check to see if reverseSwitch value changes
+        reverseSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                float val = (isChecked) ?  1.0f : 0.0f; // value = (get value of isChecked, if true val = 1.0f, if false val = 0.0f)
+                sendFloatPD("reverse", val); //send value to patch, receiveEvent names onOff
+
+            }
+        });
+
+        //<------playButton CLICK LISTENER--------------->
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                sendBangPD("play");
+
+            }
+        });
+
+        //<------stopButton CLICK LISTENER--------------->
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                sendBangPD("stop");
+
+            }
+        });
+
+        //<--------SLIDER 1 LISTENER------------>
+        slider1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                slider1Value = progress / 100.0f;
+                sendFloatPD("slider1", slider1Value);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        //<--------SLIDER 2 LISTENER------------>
+        slider2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                slider2Value = progress / 100.0f;
+                sendFloatPD("slider1", slider2Value);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
         });
@@ -108,6 +203,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
 
     //Listener receiver1
     private PdReceiver receiver1 = new PdReceiver() {
